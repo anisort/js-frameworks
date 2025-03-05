@@ -7,7 +7,7 @@ export const tasks: Task[] = [
     title: 'Complete lab1',
     assignee: 'Valeriia',
     dueDate: '17.02.2025',
-    status: TaskStatus.DONE
+    status: TaskStatus.IN_PROGRESS
   },
   {
     id: 1,
