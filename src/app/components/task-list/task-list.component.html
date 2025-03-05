@@ -1,0 +1,21 @@
+<h2>List of tasks</h2>
+<div class="task-filter">
+  <p>Filter by status</p>
+  <select (change) = "onSelected($event)">
+    <option [value]="'all'">All</option>
+    <option [value]="TaskStatus.TODO">To do</option>
+    <option [value]="TaskStatus.IN_PROGRESS">In progress</option>
+    <option [value]="TaskStatus.DONE">Done</option>
+  </select>
+</div>
+@for(task of myTasks | statusFilter: selectedStatus; track task.id; let index = $index) {
+  <app-task-item
+    [task] = "task"
+    (taskDeleted)="deleteTask($event)"
+  >
+  </app-task-item>
+
+} @empty {
+  <p>List of tasks is empty</p>
+}
+
