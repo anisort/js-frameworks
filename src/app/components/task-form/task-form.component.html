@@ -13,6 +13,9 @@
     <input type="text" id="description"
            name="description" formControlName="description"
     >
+    @if (taskForm.get('description')?.hasError('forbiddenWord')){
+      <small class="error">Entering the words React and Vue is prohibited</small>
+    }
   </div>
   <div class="task-form-control">
     <label for="dueDate">Due date</label>
@@ -21,6 +24,9 @@
     >
     @if (taskForm.get('dueDate')?.hasError('required') && taskForm.get('dueDate')?.dirty) {
       <small class="error">The "Due date" field is required</small>
+    }
+    @if (taskForm.get('dueDate')?.hasError('dateVal')){
+      <small class="error">The year cannot be less than the current year</small>
     }
   </div>
   <div class="task-form-control">

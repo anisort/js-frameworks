@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges
 import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
 import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
+import {TaskFormValidator} from '../../share/directives/task-form.validator';
 
 @Component({
   selector: 'app-task-form',
@@ -13,8 +14,8 @@ export class TaskFormComponent implements OnChanges{
 
   taskForm = new FormGroup({
     title: new FormControl('', Validators.required),
-    description: new FormControl(''),
-    dueDate: new FormControl('', Validators.required),
+    description: new FormControl('', TaskFormValidator.forbiddenWordsValidator(['React', 'Vue'])),
+    dueDate: new FormControl('', [Validators.required, TaskFormValidator.dateValidator]),
     assignee: new FormControl('', Validators.required),
     status: new FormControl(TaskStatus.TODO, Validators.required),
   })
@@ -26,7 +27,10 @@ export class TaskFormComponent implements OnChanges{
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['editTask'] && this.editTask){
-      this.task = {...this.editTask};
+      this.taskForm.patchValue({
+        ...this.editTask,
+        dueDate: this.editTask.dueDate.toISOString().split("T")[0]
+      });
     }
   }
 
@@ -38,6 +42,7 @@ export class TaskFormComponent implements OnChanges{
       let taskData = {
         ...this.taskForm.value,
         dueDate: this.taskForm.value.dueDate ? new Date(this.taskForm.value.dueDate) : new Date(),
+        id: this.editTask ? this.editTask.id : undefined,
       };
       this.taskAdd.emit(taskData as Task);
       this.taskForm.reset();
