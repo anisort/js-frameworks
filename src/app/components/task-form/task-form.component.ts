@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
 import {NgForm} from '@angular/forms';
@@ -9,7 +9,7 @@ import {NgForm} from '@angular/forms';
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.scss'
 })
-export class TaskFormComponent {
+export class TaskFormComponent implements OnInit, OnChanges{
   task!: Task;
 
   @Output()
@@ -20,7 +20,6 @@ export class TaskFormComponent {
     if(changes['editTask'] && this.editTask){
       this.task = {...this.editTask};
     }
-    //this.formattedDate = this.task.date ? new Date(this.task.date).toISOString().split('T')[0] : '';
   }
 
   ngOnInit(): void {
@@ -33,6 +32,8 @@ export class TaskFormComponent {
       status: TaskStatus.TODO
     }
   }
+
+
 
   protected readonly TaskStatus = TaskStatus;
 
