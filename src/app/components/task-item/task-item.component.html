@@ -14,5 +14,11 @@
       <option [value]="TaskStatus.DONE" [selected]="task.status === TaskStatus.DONE" >✅ Done</option>
     </select>
   </div>
-  <button (click)="deleteTask(task.id)">Delete</button>
+
+  <div class="task-item-buttons">
+    <button class="task-item-button edit" (click)="editTask()">Edit</button>
+    <button class="task-item-button delete" (click)="deleteTask(task.id)">Delete</button>
+  </div>
+
+
 </div>

@@ -38,5 +38,6 @@
       <option [ngValue]="TaskStatus.DONE">Done</option>
     </select>
   </div>
-  <button (click)="addTask(taskForm)" type="submit" [disabled]="!taskForm.valid">Add new task</button>
+  <button (click)="addTask(taskForm)" type="submit" [disabled]="!taskForm.valid"
+  >{{editTask ? 'Update task' : 'Add new task'}}</button>
 </form>

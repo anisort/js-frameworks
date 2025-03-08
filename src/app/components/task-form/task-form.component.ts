@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, SimpleChanges} from '@angular/core';
 import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
 import {NgForm} from '@angular/forms';
@@ -14,6 +14,14 @@ export class TaskFormComponent {
 
   @Output()
   taskAdd = new EventEmitter<Task>();
+  @Input() editTask: Task | null = null;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['editTask'] && this.editTask){
+      this.task = {...this.editTask};
+    }
+    //this.formattedDate = this.task.date ? new Date(this.task.date).toISOString().split('T')[0] : '';
+  }
 
   ngOnInit(): void {
     this.task = {

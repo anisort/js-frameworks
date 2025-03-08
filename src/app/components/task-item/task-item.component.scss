@@ -11,8 +11,7 @@ h3 {
   color: #333;
 }
 
-button{
-  background-color: #ff4d4d;
+.task-item-button {
   color: white;
   border: none;
   padding: 5px 10px;
@@ -20,10 +19,28 @@ button{
   border-radius: 3px;
   margin-top: 10px;
 
-  &:hover{
-    background-color: #cc0000;
+  &.delete {
+    background-color: #ff4d4d;
+
+    &:hover {
+      background-color: #cc0000;
+    }
+  }
+
+  &.edit {
+    background-color: #007bff;
+
+    &:hover {
+      background-color: #0056b3;
+    }
   }
 }
+
+.task-item-buttons {
+  display: flex;
+  gap: 5px;
+}
+
 
 .todo {
   color: #999;

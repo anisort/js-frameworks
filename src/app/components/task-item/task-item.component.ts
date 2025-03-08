@@ -10,13 +10,18 @@ import {TaskStatus} from '../../core/models/status.enum';
 })
 export class TaskItemComponent {
   @Input() task!: Task;
-  @Output() taskDeleted = new EventEmitter<number>();
+  @Output() taskDeleted: EventEmitter<number> = new EventEmitter<number>();
+  @Output() taskEdited: EventEmitter<Task> = new EventEmitter<Task>();
+
+  protected readonly TaskStatus = TaskStatus;
 
   deleteTask(id: number): void {
     this.taskDeleted.emit(id);
   }
 
-  protected readonly TaskStatus = TaskStatus;
+  editTask(): void {
+    this.taskEdited.emit(this.task);
+  }
 
   getStatusClasses(){
     return {
