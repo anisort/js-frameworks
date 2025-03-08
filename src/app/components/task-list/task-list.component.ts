@@ -23,4 +23,13 @@ export class TaskListComponent {
     const status = (event.target as HTMLSelectElement).value;
     this.selectedStatus = status as TaskStatus | 'all';
   }
+
+  addTask(task: Task): void {
+    const maxId = this.myTasks.length > 0 ? Math.max(...this.myTasks.map(task => task.id)) : 0;
+    task = {
+      ...task,
+      id: maxId + 1,
+    }
+    this.myTasks.push(task);
+  }
 }

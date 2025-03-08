@@ -1,0 +1,42 @@
+<form #taskForm="ngForm" class="task-form">
+  <div class="task-form-control">
+    <label for="title">Name</label>
+    <input type="text" id="title"
+           name="title" [(ngModel)]="task.title"
+           required #titleControl="ngModel"
+    >
+  </div>
+  <div class="task-form-control">
+    <label for="description">Description</label>
+    <input type="text" id="description"
+           name="description" [(ngModel)]="task.description"
+           #descriptionControl="ngModel"
+    >
+  </div>
+  <div class="task-form-control">
+    <label for="dueDate">Due date</label>
+    <input type="date" id="dueDate"
+           name="dueDate" [(ngModel)]="task.dueDate"
+           required #dueDateControl="ngModel"
+    >
+  </div>
+  <div class="task-form-control">
+    <label for="assignee">Assignee</label>
+    <input type="text" id="assignee"
+           name="assignee" [(ngModel)]="task.assignee"
+           required #assigneeControl="ngModel"
+    >
+  </div>
+  <div class="task-form-control">
+    <label for="status">Status</label>
+    <select id="status"
+            name="status" [(ngModel)]="task.status"
+            required #statusControl="ngModel"
+    >
+      <option [ngValue]="TaskStatus.TODO">To do</option>
+      <option [ngValue]="TaskStatus.IN_PROGRESS">In progress</option>
+      <option [ngValue]="TaskStatus.DONE">Done</option>
+    </select>
+  </div>
+  <button (click)="addTask(taskForm)" type="submit" [disabled]="!taskForm.valid">Add new task</button>
+</form>
