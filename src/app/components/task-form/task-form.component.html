@@ -1,43 +1,51 @@
-<form #taskForm="ngForm" class="task-form">
+<form [formGroup]="taskForm" class="task-form">
   <div class="task-form-control">
     <label for="title">Name</label>
     <input type="text" id="title"
-           name="title" [(ngModel)]="task.title"
-           required #titleControl="ngModel"
+           name="title" formControlName="title"
     >
+    @if (taskForm.get('title')?.hasError('required') && taskForm.get('title')?.dirty) {
+      <small class="error">The "Name" field is required</small>
+    }
   </div>
   <div class="task-form-control">
     <label for="description">Description</label>
     <input type="text" id="description"
-           name="description" [(ngModel)]="task.description"
-           #descriptionControl="ngModel"
+           name="description" formControlName="description"
     >
   </div>
   <div class="task-form-control">
     <label for="dueDate">Due date</label>
     <input type="date" id="dueDate"
-           name="dueDate" [(ngModel)]="task.dueDate"
-           required #dueDateControl="ngModel"
+           name="dueDate" formControlName="dueDate"
     >
+    @if (taskForm.get('dueDate')?.hasError('required') && taskForm.get('dueDate')?.dirty) {
+      <small class="error">The "Due date" field is required</small>
+    }
   </div>
   <div class="task-form-control">
     <label for="assignee">Assignee</label>
     <input type="text" id="assignee"
-           name="assignee" [(ngModel)]="task.assignee"
-           required #assigneeControl="ngModel"
+           name="assignee" formControlName="assignee"
     >
+    @if (taskForm.get('assignee')?.hasError('required') && taskForm.get('assignee')?.dirty) {
+      <small class="error">The "Assignee" field is required</small>
+    }
   </div>
   <div class="task-form-control">
     <label for="status">Status</label>
     <select id="status"
-            name="status" [(ngModel)]="task.status"
-            required #statusControl="ngModel"
+            name="status" formControlName="status"
     >
-      <option [ngValue]="TaskStatus.TODO">To do</option>
-      <option [ngValue]="TaskStatus.IN_PROGRESS">In progress</option>
-      <option [ngValue]="TaskStatus.DONE">Done</option>
+      <option [value]="TaskStatus.TODO">To do</option>
+      <option [value]="TaskStatus.IN_PROGRESS">In progress</option>
+      <option [value]="TaskStatus.DONE">Done</option>
     </select>
+    @if (taskForm.get('status')?.hasError('required') && taskForm.get('status')?.dirty) {
+      <small class="error">The "Status" field is required</small>
+    }
   </div>
-  <button (click)="addTask(taskForm)" type="submit" [disabled]="!taskForm.valid"
-  >{{editTask ? 'Update task' : 'Add new task'}}</button>
+  <button
+    (click)="addTask()" type="submit" [disabled]="!taskForm.valid"
+  >{{ editTask ? 'Update task' : 'Add new task'}}</button>
 </form>

@@ -33,6 +33,26 @@
     outline: none;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
   }
+
+
+  .ng-invalid.ng-dirty {
+    border-color: red;
+  }
+
+  .ng-invalid.ng-dirty + small {
+    color: red;
+  }
+
+  .ng-valid.ng-dirty {
+    border-color: green;
+  }
+
+  small.error {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+
+
 }
 
 button {

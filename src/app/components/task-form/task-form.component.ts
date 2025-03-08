@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
-import {NgForm} from '@angular/forms';
+import {FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
 
 @Component({
   selector: 'app-task-form',
@@ -9,7 +9,15 @@ import {NgForm} from '@angular/forms';
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.scss'
 })
-export class TaskFormComponent implements OnInit, OnChanges{
+export class TaskFormComponent implements OnChanges{
+
+  taskForm = new FormGroup({
+    title: new FormControl('', Validators.required),
+    description: new FormControl(''),
+    dueDate: new FormControl('', Validators.required),
+    assignee: new FormControl('', Validators.required),
+    status: new FormControl(TaskStatus.TODO, Validators.required),
+  })
   task!: Task;
 
   @Output()
@@ -22,27 +30,17 @@ export class TaskFormComponent implements OnInit, OnChanges{
     }
   }
 
-  ngOnInit(): void {
-    this.task = {
-      id: -1,
-      title: '',
-      description: '',
-      dueDate: new Date(),
-      assignee: '',
-      status: TaskStatus.TODO
-    }
-  }
-
-
 
   protected readonly TaskStatus = TaskStatus;
 
-  addTask(taskForm: NgForm): void {
-    const copyTask = {
-      ...this.task,
-      dueDate: new Date(this.task.dueDate),
+  addTask(): void {
+    if (this.taskForm.valid){
+      let taskData = {
+        ...this.taskForm.value,
+        dueDate: this.taskForm.value.dueDate ? new Date(this.taskForm.value.dueDate) : new Date(),
+      };
+      this.taskAdd.emit(taskData as Task);
+      this.taskForm.reset();
     }
-    taskForm.reset();
-    this.taskAdd.emit(copyTask);
   }
 }
