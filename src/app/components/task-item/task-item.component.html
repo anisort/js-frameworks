@@ -4,7 +4,7 @@
     <p><strong>Description:</strong>{{task.description}}</p>
   }
   <p><strong>Assignee:</strong>{{task.assignee}}</p>
-  <p><strong>Due date:</strong>{{task.dueDate}}</p>
+  <p><strong>Due date:</strong>{{task.dueDate | date: 'd.MM.yyyy'}}</p>
   <p><strong>Status: </strong><span [ngClass] = "getStatusClasses()">{{ task.status }}</span></p>
 
   <div class="select-status">
