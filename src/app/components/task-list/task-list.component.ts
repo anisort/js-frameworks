@@ -45,4 +45,13 @@ export class TaskListComponent implements OnInit {
     }
     this.loadTasks();
   }
+
+  onSelected(event: Event): void {
+    const status = (event.target as HTMLSelectElement).value;
+    this.selectedStatus = status as TaskStatus | 'all';
+  }
+
+  editTask(task: Task): void {
+    this.editingTask = {...task};
+  }
 }
