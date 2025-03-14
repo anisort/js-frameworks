@@ -34,9 +34,6 @@ export class TaskFormComponent implements OnChanges{
     }
   }
 
-
-  protected readonly TaskStatus = TaskStatus;
-
   addTask(): void {
     if (this.taskForm.valid){
       let taskData = {
@@ -48,4 +45,6 @@ export class TaskFormComponent implements OnChanges{
       this.taskForm.reset();
     }
   }
+
+  protected readonly TaskStatus = TaskStatus;
 }
