@@ -11,7 +11,7 @@ export class TaskFormValidator {
     }
   }
 
-  static dateValidator(control: AbstractControl): ValidationErrors | null {
+  static dateValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     if(!control.value) return null;
 
     const inputDate = new Date(control.value);
