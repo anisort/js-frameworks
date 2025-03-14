@@ -1,7 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Task } from '../../core/models/task.model';
 import {tasks} from '../../core/moc_data/tasks';
 import {TaskStatus} from '../../core/models/status.enum';
+import {TaskService} from '../../services/task.service';
 
 @Component({
   selector: 'app-task-list',
@@ -9,40 +10,39 @@ import {TaskStatus} from '../../core/models/status.enum';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss'
 })
-export class TaskListComponent {
+export class TaskListComponent implements OnInit {
+
   myTasks: Task[] = tasks;
+
   protected readonly TaskStatus = TaskStatus;
 
   selectedStatus!: TaskStatus | 'all';
 
-  deleteTask(index: number): void {
-    this.myTasks = this.myTasks.filter(task=> task.id !== index);
+  editingTask: Task | null = null;
+
+  constructor(private taskService: TaskService,) {
   }
 
-  onSelected(event: Event): void {
-    const status = (event.target as HTMLSelectElement).value;
-    this.selectedStatus = status as TaskStatus | 'all';
+  ngOnInit(): void {
+    this.loadTasks();
+  }
+
+  loadTasks(): void {
+    this.myTasks = this.taskService.getTasks();
+  }
+
+  deleteTask(index: number): void {
+    this.taskService.deleteTask(index);
+    this.loadTasks();
   }
 
   addTask(task: Task): void {
-    if(this.editingTask){
-      this.myTasks = this.myTasks.map(t =>
-        t.id === task.id ? {...task} : t
-      );
+    if (this.editingTask){
+      this.taskService.updateTask(task);
       this.editingTask = null;
+    } else {
+      this.taskService.addTask(task);
     }
-    else {
-      const maxId = this.myTasks.length > 0 ? Math.max(...this.myTasks.map(task => task.id)) : 0;
-      task = {
-        ...task,
-        id: maxId + 1,
-      }
-      this.myTasks.push(task);
-    }
-  }
-
-  editingTask: Task | null = null;
-  editTask(task: Task): void {
-    this.editingTask = {...task};
+    this.loadTasks();
   }
 }
