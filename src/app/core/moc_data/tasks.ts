@@ -6,7 +6,7 @@ export const tasks: Task[] = [
     id: 0,
     title: 'Complete lab1',
     assignee: 'Valeriia',
-    dueDate: new Date('2025-02-17'),
+    dueDate: '2025-02-17',
     status: TaskStatus.DONE
   },
   {
@@ -14,7 +14,7 @@ export const tasks: Task[] = [
     title: 'Complete lab2',
     description: 'Read the lecture and methodological instructions, and according to them complete lab2',
     assignee: 'Valeriia',
-    dueDate: new Date('2025-02-24'),
+    dueDate: '2025-02-24',
     status: TaskStatus.IN_PROGRESS
   },
   {
@@ -22,7 +22,7 @@ export const tasks: Task[] = [
     title: 'Complete lab3',
     description: 'Read the lecture and methodological instructions, and according to them complete lab3',
     assignee: 'Valeriia',
-    dueDate: new Date('2025-03-01'),
+    dueDate: '2025-03-01',
     status: TaskStatus.TODO
   },
 ];

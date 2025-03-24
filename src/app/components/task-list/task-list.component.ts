@@ -3,6 +3,8 @@ import { Task } from '../../core/models/task.model';
 import {tasks} from '../../core/moc_data/tasks';
 import {TaskStatus} from '../../core/models/status.enum';
 import {TaskService} from '../../services/task.service';
+import {Observable} from 'rxjs';
+
 
 @Component({
   selector: 'app-task-list',
@@ -12,46 +14,53 @@ import {TaskService} from '../../services/task.service';
 })
 export class TaskListComponent implements OnInit {
 
-  myTasks: Task[] = tasks;
-
-  protected readonly TaskStatus = TaskStatus;
-
-  selectedStatus!: TaskStatus | 'all';
-
+  myTasks$!: Observable<Task[]>;
+  selectedStatus: TaskStatus | '' = '';
   editingTask: Task | null = null;
 
-  constructor(private taskService: TaskService,) {
+  constructor(private taskService: TaskService) {
   }
 
   ngOnInit(): void {
-    this.loadTasks();
+    this.myTasks$ = this.taskService.getTasks();
   }
 
-  loadTasks(): void {
-    this.myTasks = this.taskService.getTasks();
-  }
-
-  deleteTask(index: number): void {
-    this.taskService.deleteTask(index);
-    this.loadTasks();
+  loadTasks(status?: string): void {
+    this.myTasks$ = this.taskService.getTasks(status);
   }
 
   addTask(task: Task): void {
-    if (this.editingTask){
-      this.taskService.updateTask(task);
+    if (this.editingTask) {
+      if (!task.id) return;
+      this.taskService.updateTask(task.id, task).subscribe({
+        next: () => this.loadTasks(),
+        error: error => console.log(error),
+      })
       this.editingTask = null;
     } else {
-      this.taskService.addTask(task);
+      this.taskService.createTask(task).subscribe({
+        next: () => this.loadTasks(),
+        error: error => console.log(error),
+      });
     }
-    this.loadTasks();
-  }
-
-  onSelected(event: Event): void {
-    const status = (event.target as HTMLSelectElement).value;
-    this.selectedStatus = status as TaskStatus | 'all';
   }
 
   editTask(task: Task): void {
     this.editingTask = {...task};
   }
+
+  deleteTask(id: number): void {
+    this.taskService.deleteTask(id).subscribe({
+      next: () => this.loadTasks(),
+      error: error => console.log(error),
+    });
+  }
+
+  onSelected(event: Event): void {
+    const status = (event.target as HTMLSelectElement).value;
+    this.selectedStatus = status as TaskStatus | '';
+    this.loadTasks(this.selectedStatus);
+  }
+
+  protected readonly TaskStatus = TaskStatus;
 }

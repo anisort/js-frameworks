@@ -5,7 +5,7 @@
   }
   <p><strong>Assignee:</strong>{{task.assignee}}</p>
   <p><strong>Due date:</strong>{{task.dueDate | date: 'd.MM.yyyy'}}</p>
-  <p><strong>Status: </strong><span [ngClass] = "getStatusClasses()">{{ task.status }}</span></p>
+  <p><strong>Status: </strong><span [ngClass] = "getStatusClasses()">{{ task.status | taskStatus }}</span></p>
 
   <div class="select-status">
     <select (change)="updateStatus($event)">

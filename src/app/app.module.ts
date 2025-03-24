@@ -9,6 +9,8 @@ import { TaskItemComponent } from './components/task-item/task-item.component';
 import { StatusFilterPipe } from './share/pipes/status-filter.pipe';
 import { TaskFormComponent } from './components/task-form/task-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import {provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { TaskStatusPipe } from './share/pipes/task-status.pipe';
 
 @NgModule({
   declarations: [
@@ -16,7 +18,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     TaskListComponent,
     TaskItemComponent,
     StatusFilterPipe,
-    TaskFormComponent
+    TaskFormComponent,
+    TaskStatusPipe
   ],
   imports: [
     BrowserModule,
@@ -24,7 +27,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     FormsModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(withInterceptorsFromDi()),
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

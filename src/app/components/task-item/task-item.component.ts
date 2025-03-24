@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
+import {TaskService} from '../../services/task.service';
 
 @Component({
   selector: 'app-task-item',
@@ -13,9 +14,13 @@ export class TaskItemComponent {
   @Output() taskDeleted: EventEmitter<number> = new EventEmitter<number>();
   @Output() taskEdited: EventEmitter<Task> = new EventEmitter<Task>();
 
+  constructor(private taskService: TaskService) {
+  }
+
   protected readonly TaskStatus = TaskStatus;
 
-  deleteTask(id: number): void {
+  deleteTask(id: number | undefined): void {
+    if (!id) return;
     this.taskDeleted.emit(id);
   }
 
@@ -34,7 +39,11 @@ export class TaskItemComponent {
 
   updateStatus(event: Event): void {
     const selectedValue = (event.target as HTMLSelectElement).value;
-    this.task.status = selectedValue as TaskStatus;
+    if(!this.task.id) return;
+    this.taskService.patchTask(this.task.id, {status: selectedValue as TaskStatus}).subscribe({
+      next: updatedTask => this.task.status = updatedTask.status,
+      error: error => console.error('Status error', error),
+    })
   }
 
 

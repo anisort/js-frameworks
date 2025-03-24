@@ -12,7 +12,7 @@
     <option [value]="TaskStatus.DONE">Done</option>
   </select>
 </div>
-@for(task of myTasks | statusFilter: selectedStatus; track task.id; let index = $index) {
+@for(task of myTasks$ | async; track task.id; let index = $index) {
   <app-task-item
     [task] = "task"
     (taskDeleted)="deleteTask($event)"
