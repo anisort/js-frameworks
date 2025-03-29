@@ -36,14 +36,18 @@ export class TaskItemComponent {
     }
   }
 
-
+  @Output() statusUpdated = new EventEmitter<void>();
   updateStatus(event: Event): void {
     const selectedValue = (event.target as HTMLSelectElement).value;
     if(!this.task.id) return;
     this.taskService.patchTask(this.task.id, {status: selectedValue as TaskStatus}).subscribe({
-      next: updatedTask => this.task.status = updatedTask.status,
+      next: updatedTask => {
+        this.task.status = updatedTask.status;
+        this.statusUpdated.emit();
+      },
       error: error => console.error('Status error', error),
     })
+
   }
 
 

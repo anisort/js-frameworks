@@ -1,6 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
 import { Task } from '../core/models/task.model';
-import { tasks } from '../core/moc_data/tasks'
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {AppConfig, CONFIG_TOKEN} from '../share/config/config';
 import {Observable} from 'rxjs';

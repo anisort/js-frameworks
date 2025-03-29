@@ -6,7 +6,7 @@
 <div class="task-filter">
   <p>Filter by status</p>
   <select (change) = "onSelected($event)">
-    <option [value]="'all'">All</option>
+    <option [value]="''">All</option>
     <option [value]="TaskStatus.TODO">To do</option>
     <option [value]="TaskStatus.IN_PROGRESS">In progress</option>
     <option [value]="TaskStatus.DONE">Done</option>
@@ -17,6 +17,7 @@
     [task] = "task"
     (taskDeleted)="deleteTask($event)"
     (taskEdited)="editTask($event)"
+    (statusUpdated)="loadTasks(selectedStatus)"
   >
   </app-task-item>
 
