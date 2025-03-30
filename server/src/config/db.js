@@ -22,6 +22,7 @@ const connectDB = async () => {
   }
 }
 
+
 mongoose.connection.on('connected', () => console.log('Mongoose connected'));
 
 mongoose.connection.on('error', (err) => {
@@ -38,6 +39,7 @@ mongoose.connection.on('disconnected', () => {
 mongoose.connection.on('reconnected', () => console.log('Mongoose successfully reconnected'))
 
 const gracefulExit = async (signal) => {
+  console.log('MONGO_URI:', process.env.MONGO_URI);
   console.log(`Signal received ${signal}. Finishing work...`)
   try {
     await mongoose.connection.close(false);
@@ -52,4 +54,3 @@ process.on('SIGINT', gracefulExit);
 process.on('SIGTERM', gracefulExit);
 
 module.exports = connectDB;
-module.exports = gracefulExit;

@@ -49,7 +49,7 @@ export class TaskListComponent implements OnInit {
     this.editingTask = {...task};
   }
 
-  deleteTask(id: number): void {
+  deleteTask(id: string): void {
     this.taskService.deleteTask(id).subscribe({
       next: () => this.loadTasks(),
       error: error => console.log(error),

@@ -11,7 +11,7 @@ import {TaskService} from '../../services/task.service';
 })
 export class TaskItemComponent {
   @Input() task!: Task;
-  @Output() taskDeleted: EventEmitter<number> = new EventEmitter<number>();
+  @Output() taskDeleted: EventEmitter<string> = new EventEmitter<string>();
   @Output() taskEdited: EventEmitter<Task> = new EventEmitter<Task>();
 
   constructor(private taskService: TaskService) {
@@ -19,7 +19,7 @@ export class TaskItemComponent {
 
   protected readonly TaskStatus = TaskStatus;
 
-  deleteTask(id: number | undefined): void {
+  deleteTask(id: string): void {
     if (!id) return;
     this.taskDeleted.emit(id);
   }
