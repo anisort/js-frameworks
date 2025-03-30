@@ -1,7 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Task } from '../../core/models/task.model';
 import {tasks} from '../../core/moc_data/tasks';
 import {TaskStatus} from '../../core/models/status.enum';
+import {TaskService} from '../../services/task.service';
+import {Observable} from 'rxjs';
+
 
 @Component({
   selector: 'app-task-list',
@@ -9,18 +12,55 @@ import {TaskStatus} from '../../core/models/status.enum';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss'
 })
-export class TaskListComponent {
-  myTasks: Task[] = tasks;
-  protected readonly TaskStatus = TaskStatus;
+export class TaskListComponent implements OnInit {
 
-  selectedStatus!: TaskStatus | 'all';
+  myTasks$!: Observable<Task[]>;
+  selectedStatus: TaskStatus | '' = '';
+  editingTask: Task | null = null;
 
-  deleteTask(index: number): void {
-    this.myTasks = this.myTasks.filter(task=> task.id !== index);
+  constructor(private taskService: TaskService) {
+  }
+
+  ngOnInit(): void {
+    this.myTasks$ = this.taskService.getTasks();
+  }
+
+  loadTasks(status?: string): void {
+    this.myTasks$ = this.taskService.getTasks(status);
+  }
+
+  addTask(task: Task): void {
+    if (this.editingTask) {
+      if (!task.id) return;
+      this.taskService.updateTask(task.id, task).subscribe({
+        next: () => this.loadTasks(),
+        error: error => console.log(error),
+      })
+      this.editingTask = null;
+    } else {
+      this.taskService.createTask(task).subscribe({
+        next: () => this.loadTasks(),
+        error: error => console.log(error),
+      });
+    }
+  }
+
+  editTask(task: Task): void {
+    this.editingTask = {...task};
+  }
+
+  deleteTask(id: number): void {
+    this.taskService.deleteTask(id).subscribe({
+      next: () => this.loadTasks(),
+      error: error => console.log(error),
+    });
   }
 
   onSelected(event: Event): void {
     const status = (event.target as HTMLSelectElement).value;
-    this.selectedStatus = status as TaskStatus | 'all';
+    this.selectedStatus = status as TaskStatus | '';
+    this.loadTasks(this.selectedStatus);
   }
+
+  protected readonly TaskStatus = TaskStatus;
 }

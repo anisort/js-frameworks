@@ -4,8 +4,8 @@
     <p><strong>Description:</strong>{{task.description}}</p>
   }
   <p><strong>Assignee:</strong>{{task.assignee}}</p>
-  <p><strong>Due date:</strong>{{task.dueDate}}</p>
-  <p><strong>Status: </strong><span [ngClass] = "getStatusClasses()">{{ task.status }}</span></p>
+  <p><strong>Due date:</strong>{{task.dueDate | date: 'd.MM.yyyy'}}</p>
+  <p><strong>Status: </strong><span [ngClass] = "getStatusClasses()">{{ task.status | taskStatus }}</span></p>
 
   <div class="select-status">
     <select (change)="updateStatus($event)">
@@ -14,5 +14,11 @@
       <option [value]="TaskStatus.DONE" [selected]="task.status === TaskStatus.DONE" >✅ Done</option>
     </select>
   </div>
-  <button (click)="deleteTask(task.id)">Delete</button>
+
+  <div class="task-item-buttons">
+    <button class="task-item-button edit" (click)="editTask()">Edit</button>
+    <button class="task-item-button delete" (click)="deleteTask(task.id)">Delete</button>
+  </div>
+
+
 </div>
