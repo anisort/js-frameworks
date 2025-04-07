@@ -16,22 +16,23 @@ import {MatDialogRef} from '@angular/material/dialog';
 export class TaskFormComponent implements OnInit, OnDestroy {
   destroy$ = new Subject<void>();
   editMode: boolean = false;
+
   taskForm = new FormGroup({
     id: new FormControl(''),
     title: new FormControl('', Validators.required),
-    description: new FormControl('',
-      TaskFormValidator.forbiddenWordsValidator(['React', 'Vue'])),
-    dueDate: new FormControl('', [Validators.required,
-      TaskFormValidator.dateValidator]),
+    description: new FormControl('', TaskFormValidator.forbiddenWordsValidator(['React', 'Vue'])),
+    dueDate: new FormControl('', [Validators.required, TaskFormValidator.dateValidator]),
     assignee: new FormControl('', Validators.required),
     status: new FormControl<TaskStatus>(TaskStatus.TODO, Validators.required),
   })
+
   protected readonly TaskStatus = TaskStatus;
   constructor(
     private taskStateService: TaskStateService,
     public dialogRef: MatDialogRef<TaskFormComponent>,
   ) {
   }
+
   ngOnInit(): void {
     this.taskStateService.selectedTask$.pipe(takeUntil(this.destroy$)).subscribe((task) =>
     {
@@ -44,6 +45,7 @@ export class TaskFormComponent implements OnInit, OnDestroy {
       }
     })
   }
+
   onSubmit(): void {
     if (this.taskForm.valid) {
       if (this.editMode) {

@@ -87,18 +87,6 @@ export class TaskListComponent implements OnInit, OnDestroy {
     this.taskStateService.loadTasks(event.value);
   }
 
-
-
-
-
-  deleteTask(id: string): void {
-    this.taskStateService.deleteTask(id);
-  }
-
-  statusChange({ id, status }: { id: string, status: TaskStatus }): void {
-    this.taskStateService.patchTask(id, { status });
-  }
-
 }
 
 

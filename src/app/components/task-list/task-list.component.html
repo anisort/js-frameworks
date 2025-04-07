@@ -1,20 +1,20 @@
 <section class="task-list-container">
   <div class="task-header">
-    <h2>Список завдань</h2>
-    <button mat-raised-button (click)="openDialog()">Додати завдання</button>
+    <h2>List of tasks</h2>
+    <button mat-raised-button (click)="openDialog()">Add new task</button>
   </div>
   <mat-form-field>
-    <mat-label>Фільтр за статусом</mat-label>
+    <mat-label>Filter by status</mat-label>
     <mat-select (selectionChange)="onSelected($event)">
-      <mat-option [value]="''">Всі</mat-option>
-      <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
-      <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
-      <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
+      <mat-option [value]="''">All</mat-option>
+      <mat-option [value]="TaskStatus.TODO">To do</mat-option>
+      <mat-option [value]="TaskStatus.IN_PROGRESS">In progress</mat-option>
+      <mat-option [value]="TaskStatus.DONE">Done</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field>
-    <mat-label>Пошук (назва, опис, автор)</mat-label>
+    <mat-label>Search (title, description, author)</mat-label>
     <input matInput type="text" id="filter" [formControl]="filterControl">
   </mat-form-field>
 
@@ -30,7 +30,7 @@
           >
           </app-task-item>
         } @empty {
-          <p>Завдання відсутні</p>
+          <p>List of tasks is empty</p>
         }
       }
     </div>

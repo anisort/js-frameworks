@@ -21,7 +21,7 @@ export class TaskService {
     let params = new HttpParams();
     if(status) params = params.set('status', status)
     return this.http.get<TaskApi[]>(`${this.config.apiUrl}/v2/tasks`, {params: params}).pipe(
-      map((tasks: TaskApi[]): Task[] => tasks.map(task => TaskAdapter.fromAPI(task))), delay(5000)
+      map((tasks: TaskApi[]): Task[] => tasks.map(task => TaskAdapter.fromAPI(task))), delay(1000)
     );
   }
 
