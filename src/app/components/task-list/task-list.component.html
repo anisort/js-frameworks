@@ -1,27 +1,38 @@
-<app-task-form
-  [editTask]="editingTask"
-  (taskAdd)="addTask($event)"
-></app-task-form>
-<h2>List of tasks</h2>
-<div class="task-filter">
-  <p>Filter by status</p>
-  <select (change) = "onSelected($event)">
-    <option [value]="''">All</option>
-    <option [value]="TaskStatus.TODO">To do</option>
-    <option [value]="TaskStatus.IN_PROGRESS">In progress</option>
-    <option [value]="TaskStatus.DONE">Done</option>
-  </select>
-</div>
-@for(task of myTasks$ | async; track task.id; let index = $index) {
-  <app-task-item
-    [task] = "task"
-    (taskDeleted)="deleteTask($event)"
-    (taskEdited)="editTask($event)"
-    (statusUpdated)="loadTasks(selectedStatus)"
-  >
-  </app-task-item>
+<section class="task-list-container">
+  <div class="task-header">
+    <h2>Список завдань</h2>
+    <button mat-raised-button (click)="openDialog()">Додати завдання</button>
+  </div>
+  <mat-form-field>
+    <mat-label>Фільтр за статусом</mat-label>
+    <mat-select (selectionChange)="onSelected($event)">
+      <mat-option [value]="''">Всі</mat-option>
+      <mat-option [value]="TaskStatus.TODO">До роботи</mat-option>
+      <mat-option [value]="TaskStatus.IN_PROGRESS">В процесі</mat-option>
+      <mat-option [value]="TaskStatus.DONE">Виконано</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-} @empty {
-  <p>List of tasks is empty</p>
-}
+  <mat-form-field>
+    <mat-label>Пошук (назва, опис, автор)</mat-label>
+    <input matInput type="text" id="filter" [formControl]="filterControl">
+  </mat-form-field>
 
+  @if (hasLoading) {
+    <mat-spinner></mat-spinner>
+  } @else {
+    <div class="task-list">
+      @if (myTasks$ | async; as data) {
+        @for(task of data; track task.id; let index = $index) {
+          <app-task-item
+            [task]="task"
+            (taskEdited)="editTask($event)"
+          >
+          </app-task-item>
+        } @empty {
+          <p>Завдання відсутні</p>
+        }
+      }
+    </div>
+  }
+</section>

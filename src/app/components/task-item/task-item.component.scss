@@ -16,11 +16,12 @@ h3 {
   border: none;
   padding: 5px 10px;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 10px;
   margin-top: 10px;
 
   &.delete {
     background-color: #ff4d4d;
+    margin-left: 10px;
 
     &:hover {
       background-color: #cc0000;

@@ -1,9 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { Task } from '../../core/models/task.model';
 import {tasks} from '../../core/moc_data/tasks';
 import {TaskStatus} from '../../core/models/status.enum';
 import {TaskService} from '../../services/task.service';
-import {Observable} from 'rxjs';
+import {combineLatest, debounceTime, distinctUntilChanged, map, Observable, startWith, Subject, takeUntil,} from 'rxjs';
+import {TaskStateService} from '../../share/state/task-state.service';
+import {MatDialog} from '@angular/material/dialog';
+import {TaskFormComponent} from '../task-form/task-form.component';
+import {MatSelectChange} from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import {FormControl} from '@angular/forms';
 
 
 @Component({
@@ -12,55 +18,87 @@ import {Observable} from 'rxjs';
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss'
 })
-export class TaskListComponent implements OnInit {
+export class TaskListComponent implements OnInit, OnDestroy {
 
+  destroy$ = new Subject<void>();
   myTasks$!: Observable<Task[]>;
-  selectedStatus: TaskStatus | '' = '';
-  editingTask: Task | null = null;
+  hasLoading: boolean = false;
+  filterControl = new FormControl('');
 
-  constructor(private taskService: TaskService) {
+  protected readonly TaskStatus = TaskStatus;
+
+  constructor(
+    private taskStateService: TaskStateService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {
   }
 
   ngOnInit(): void {
-    this.myTasks$ = this.taskService.getTasks();
-  }
+    this.taskStateService.loadTasks();
 
-  loadTasks(status?: string): void {
-    this.myTasks$ = this.taskService.getTasks(status);
-  }
+    this.myTasks$ = combineLatest([
+      this.taskStateService.task$,
+      this.filterControl.valueChanges.pipe(
+        startWith(''),
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+    ]).pipe(
+      map(([tasks, filter]) =>
+        tasks.filter(task =>
+          task.title.toLowerCase().includes(filter ?? ''.toLowerCase()) ||
+          task.description?.toLowerCase().includes(filter ?? ''.toLowerCase()) ||
+          task.assignee.toLowerCase().includes(filter ?? ''.toLowerCase())
+        )
+      )
+    );
 
-  addTask(task: Task): void {
-    if (this.editingTask) {
-      if (!task.id) return;
-      this.taskService.updateTask(task.id, task).subscribe({
-        next: () => this.loadTasks(),
-        error: error => console.log(error),
-      })
-      this.editingTask = null;
-    } else {
-      this.taskService.createTask(task).subscribe({
-        next: () => this.loadTasks(),
-        error: error => console.log(error),
-      });
-    }
-  }
+    this.taskStateService.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
+      if (error) {
+        this.snackBar.open(error, 'Закрити', { duration: 4000, panelClass: ['error-snackbar'] });
+      }
+    });
 
-  editTask(task: Task): void {
-    this.editingTask = {...task};
-  }
-
-  deleteTask(id: string): void {
-    this.taskService.deleteTask(id).subscribe({
-      next: () => this.loadTasks(),
-      error: error => console.log(error),
+    this.taskStateService.loading$.pipe(takeUntil(this.destroy$)).subscribe((loading: boolean) => {
+      this.hasLoading = loading;
     });
   }
 
-  onSelected(event: Event): void {
-    const status = (event.target as HTMLSelectElement).value;
-    this.selectedStatus = status as TaskStatus | '';
-    this.loadTasks(this.selectedStatus);
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  protected readonly TaskStatus = TaskStatus;
+  openDialog(): void {
+    this.dialog.open(TaskFormComponent, {
+      height: '70vh',
+      width: '80vw',
+    });
+  }
+
+  editTask(task: Task): void {
+    this.taskStateService.selectTask(task);
+    this.openDialog();
+  }
+
+
+  onSelected(event: MatSelectChange): void {
+    this.taskStateService.loadTasks(event.value);
+  }
+
+
+
+
+
+  deleteTask(id: string): void {
+    this.taskStateService.deleteTask(id);
+  }
+
+  statusChange({ id, status }: { id: string, status: TaskStatus }): void {
+    this.taskStateService.patchTask(id, { status });
+  }
+
 }
+
+

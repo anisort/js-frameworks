@@ -1,0 +1,25 @@
+.task-item {
+  width: 100%;
+  mat-card-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    .edit-button {
+      background-color: #0f9ac5;
+      color: white;
+    }
+    .delete-button {
+      background-color: #f44336;
+      color: white;
+    }
+  }
+}
+.todo {
+  color: #999;
+}
+.done {
+  color: green;
+}
+.in-progress {
+  color: orange;
+}
