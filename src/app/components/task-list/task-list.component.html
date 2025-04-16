@@ -26,7 +26,7 @@
         @for(task of data; track task.id; let index = $index) {
           <app-task-item
             [task]="task"
-            (taskEdited)="editTask($event)"
+            (taskEdited)="editTask()"
           >
           </app-task-item>
         } @empty {

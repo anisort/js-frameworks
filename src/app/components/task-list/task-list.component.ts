@@ -10,6 +10,10 @@ import {TaskFormComponent} from '../task-form/task-form.component';
 import {MatSelectChange} from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {FormControl} from '@angular/forms';
+import {Store} from '@ngrx/store';
+import {AppState} from '../../store/app.state';
+import * as TaskActions from '../../store/task/task.actions';
+import * as TaskSelectors from '../../store/task/task.selector';
 
 
 @Component({
@@ -24,10 +28,13 @@ export class TaskListComponent implements OnInit, OnDestroy {
   myTasks$!: Observable<Task[]>;
   hasLoading: boolean = false;
   filterControl = new FormControl('');
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
 
   protected readonly TaskStatus = TaskStatus;
 
   constructor(
+    private store: Store<AppState>,
     private taskStateService: TaskStateService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
@@ -35,10 +42,12 @@ export class TaskListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.taskStateService.loadTasks();
+    this.store.dispatch(TaskActions.loadTasks({}));
+    this.loading$ = this.store.select(TaskSelectors.selectTaskLoading);
+    this.error$ = this.store.select(TaskSelectors.selectTaskError);
 
     this.myTasks$ = combineLatest([
-      this.taskStateService.task$,
+      this.store.select(TaskSelectors.selectFilteredTasks),
       this.filterControl.valueChanges.pipe(
         startWith(''),
         debounceTime(300),
@@ -50,20 +59,19 @@ export class TaskListComponent implements OnInit, OnDestroy {
           task.title.toLowerCase().includes(filter ?? ''.toLowerCase()) ||
           task.description?.toLowerCase().includes(filter ?? ''.toLowerCase()) ||
           task.assignee.toLowerCase().includes(filter ?? ''.toLowerCase())
-        )
-      )
+        )),
     );
 
-    this.taskStateService.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
       if (error) {
-        this.snackBar.open(error, 'Закрити', { duration: 4000, panelClass: ['error-snackbar'] });
+        this.snackBar.open(error, 'Close', { duration: 4000, panelClass: ['error-snackbar'] });
       }
     });
-
-    this.taskStateService.loading$.pipe(takeUntil(this.destroy$)).subscribe((loading: boolean) => {
+    this.loading$.pipe(takeUntil(this.destroy$)).subscribe((loading) => {
       this.hasLoading = loading;
-    });
+    })
   }
+
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -77,14 +85,13 @@ export class TaskListComponent implements OnInit, OnDestroy {
     });
   }
 
-  editTask(task: Task): void {
-    this.taskStateService.selectTask(task);
+  editTask(): void {
     this.openDialog();
   }
 
 
   onSelected(event: MatSelectChange): void {
-    this.taskStateService.loadTasks(event.value);
+    this.store.dispatch(TaskActions.setFilterStatus({status: event.value}))
   }
 
 }
