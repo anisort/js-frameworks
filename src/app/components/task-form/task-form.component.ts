@@ -3,7 +3,7 @@ import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
 import {FormBuilder, FormControl, FormGroup, NgForm, Validators} from '@angular/forms';
 import {TaskFormValidator} from '../../share/directives/task-form.validator';
-import {Observable, Subject, takeUntil} from 'rxjs';
+import {filter, Observable, Subject, take, takeUntil} from 'rxjs';
 import {TaskStateService} from '../../share/state/task-state.service';
 import {MatDialogRef} from '@angular/material/dialog';
 import {Store} from '@ngrx/store';
@@ -22,12 +22,14 @@ export class TaskFormComponent implements OnInit, OnDestroy {
   selectedTask$!: Observable<Task | null>;
   taskForm!: FormGroup;
   editMode: boolean = false;
+
   constructor(
     private store: Store<AppState>,
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<TaskFormComponent>,
   ) {
   }
+
   ngOnInit(): void {
     this.selectedTask$ = this.store.select(TaskSelectors.selectSelectedTask);
     this.taskForm = this.fb.group({
@@ -48,17 +50,33 @@ export class TaskFormComponent implements OnInit, OnDestroy {
       }
     })
   }
+
   onSubmit(): void {
     if (this.taskForm.valid) {
       if (this.editMode) {
-        this.store.dispatch(TaskActions.updateTask({task: {...this.taskForm.value}}));
+        this.store.dispatch(TaskActions.updateTask({ task: { ...this.taskForm.value } }));
       } else {
-        this.store.dispatch(TaskActions.createTask({task: {...this.taskForm.value}}));
+        this.store.dispatch(TaskActions.createTask({ task: { ...this.taskForm.value } }));
       }
-      this.store.dispatch(TaskActions.selectTask({ id: null }));
-      this.dialogRef.close();
+
+      this.store.select(TaskSelectors.selectTaskLoading)
+        .pipe(
+          filter((isLoading: boolean) => !isLoading),
+          take(1)
+        )
+        .subscribe(() => {
+          this.store.select(TaskSelectors.selectTaskError)
+            .pipe(take(1))
+            .subscribe(error => {
+              if (!error) {
+                this.dialogRef.close(this.editMode ? 'updated' : 'created');
+                this.store.dispatch(TaskActions.selectTask({ id: null }));
+              }
+            });
+        });
     }
   }
+
   ngOnDestroy() {
     this.store.dispatch(TaskActions.selectTask({ id: null }));
     this.destroy$.next();

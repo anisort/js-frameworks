@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Task} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
 import {TaskService} from '../../services/task.service';
@@ -7,6 +7,9 @@ import {MatSelectChange} from '@angular/material/select';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../store/app.state';
 import * as TaskActions from '../../store/task/task.actions';
+import {Observable, Subject, switchMap, takeUntil} from 'rxjs';
+import {selectRouteParams} from '../../store/router/router.selectors';
+import {selectTaskById} from '../../store/task/task.selector';
 
 @Component({
   selector: 'app-task-item',
@@ -14,32 +17,31 @@ import * as TaskActions from '../../store/task/task.actions';
   templateUrl: './task-item.component.html',
   styleUrl: './task-item.component.scss'
 })
-export class TaskItemComponent {
-  @Input() task!: Task; // отримуємо об'єкт завдання
-  @Output() taskEdited: EventEmitter<void> = new EventEmitter<void>(); // подія для редагування завдання
-  constructor(private store: Store<AppState>) {
-  }
-  deleteTask(id: string): void {
-    this.store.dispatch(TaskActions.deleteTask({id}));
-  }
-  editTask(): void {
-    const id = this.task.id;
-    this.store.dispatch(TaskActions.selectTask({id}));
-    this.taskEdited.emit();
-  }
-  updateStatus(event: MatSelectChange) {
-    const selectedValue = event.value;
-    const id = this.task.id;
-    this.store.dispatch(TaskActions.patchTask({id: id, changes: {status: selectedValue}}));
-   }
+export class TaskItemComponent implements OnInit, OnDestroy{
+  task$!: Observable<Task | null>;
+  destroy$ = new Subject<void>();
 
+  constructor(private store: Store<AppState>) { }
 
-  getStatusClasses() {
-    return {
-      'done': this.task.status === TaskStatus.DONE,
-      'todo': this.task.status === TaskStatus.TODO,
-      'in-progress': this.task.status === TaskStatus.IN_PROGRESS
-    };
+  ngOnInit(): void {
+    this.task$ = this.store.select(selectRouteParams).pipe(
+      takeUntil(this.destroy$),
+      switchMap(params => this.store.select(selectTaskById(params['id'])))
+    );
+  }
+
+  updateStatus(id: string, event: MatSelectChange): void {
+    const selectedValue: any = event.value;
+    this.store.dispatch(TaskActions.patchTask({ id: id, changes: { status: selectedValue } }));
+  }
+
+  getStatusClass(status: TaskStatus): string {
+    return `chip-${status.toLowerCase()}`;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
   protected readonly TaskStatus = TaskStatus;
 }

@@ -5,12 +5,12 @@ import { createAction, props } from '@ngrx/store';
 // Load
 export const loadTasks = createAction(
   '[Task] Load All',
-  props<{ status?: TaskStatus }>()
+  props<{ page: number; pageSize: number; filter?: string; status?: TaskStatus | string }>()
 );
 
 export const loadTasksSuccess = createAction(
   '[Task] Load All Success',
-  props<{ tasks: Task[] }>()
+  props<{ tasks: Task[], total: number }>()
 );
 
 export const loadTasksFailure = createAction(
@@ -74,7 +74,7 @@ export const deleteTask = createAction(
 
 export const deleteTaskSuccess = createAction(
   '[Task] Delete Success',
-  props<{ id: string }>()
+  props<{ id: string, total: number }>()
 );
 
 export const deleteTaskFailure = createAction(

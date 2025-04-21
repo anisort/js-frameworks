@@ -1,5 +1,5 @@
-import {TaskApi} from '../../core/models/task-api.model';
-import {Task} from '../../core/models/task.model';
+import {TaskApi, TaskLoadApi} from '../../core/models/task-api.model';
+import {Task, TaskLoad} from '../../core/models/task.model';
 import {TaskStatus} from '../../core/models/status.enum';
 
 export class TaskAdapter {
@@ -11,6 +11,12 @@ export class TaskAdapter {
       assignee: response.assignee,
       dueDate: response.dueDate?.split('T')[0],
       status: response.status as TaskStatus
+    }
+  }
+  static fromLoadAPI(response: TaskLoadApi): TaskLoad {
+    return {
+      tasks: response.tasks.map(task => TaskAdapter.fromAPI(task)),
+      total: response.total
     }
   }
   static toAPI(task: Task): Omit<TaskApi, '_id'> {

@@ -1,9 +1,9 @@
 import {Inject, Injectable} from '@angular/core';
-import { Task } from '../core/models/task.model';
+import {Task, TaskLoad} from '../core/models/task.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {AppConfig, CONFIG_TOKEN} from '../share/config/config';
 import {delay, map, Observable} from 'rxjs';
-import {TaskApi} from '../core/models/task-api.model';
+import {TaskApi, TaskLoadApi} from '../core/models/task-api.model';
 import {TaskAdapter} from '../share/adapters/task.adapter';
 
 @Injectable({
@@ -17,11 +17,16 @@ export class TaskService {
     @Inject(CONFIG_TOKEN) private config: AppConfig
   ) { }
 
-  getTasks(status?: string): Observable<Task[]> {
-    let params = new HttpParams();
-    if(status) params = params.set('status', status)
-    return this.http.get<TaskApi[]>(`${this.config.apiUrl}/v2/tasks`, {params: params}).pipe(
-      map((tasks: TaskApi[]): Task[] => tasks.map(task => TaskAdapter.fromAPI(task))), delay(1000)
+  getTasks(page: number, pageSize: number, filter?: string, status?: string): Observable<TaskLoad> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('limit', pageSize);
+
+    if (filter) params = params.set('filter', filter);
+    if (status) params = params.set('status', status);
+
+    return this.http.get<TaskLoadApi>(`${this.config.apiUrl}/v2/tasks`, { params: params }).pipe(
+      map(TaskAdapter.fromLoadAPI),
     );
   }
 
@@ -44,7 +49,7 @@ export class TaskService {
     );
   }
 
-  deleteTask(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.config.apiUrl}/v2/tasks/${id}`);
+  deleteTask(id: string): Observable<{ message: string, total: number }> {
+    return this.http.delete<{ message: string, total: number }>(`${this.config.apiUrl}/v2/tasks/${id}`);
   }
 }

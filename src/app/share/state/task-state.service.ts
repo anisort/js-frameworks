@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, catchError, finalize, of, switchMap, tap, throwError} from 'rxjs';
-import {Task} from '../../core/models/task.model';
+import {Task, TaskLoad} from '../../core/models/task.model';
 import {TaskService} from '../../services/task.service';
 
 @Injectable({
@@ -24,9 +24,9 @@ export class TaskStateService {
     this._loading$.next(true);
     this._error$.next(null);
 
-    this.taskService.getTasks(status)
+    this.taskService.getTasks(1, 10, undefined, status)
       .pipe(
-        tap((tasks: Task[]) => this._tasks$.next(tasks)),
+        tap((response: TaskLoad) => this._tasks$.next(response.tasks)),
         catchError(err => {
           this._error$.next((err.error.errors) ? err.error.message + '. ' + err.error.errors : err.error.message);
           return throwError(() => err.message);

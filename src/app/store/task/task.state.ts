@@ -6,13 +6,17 @@ export interface TaskState extends EntityState<Task> {
   error: string | null;
   selectedTaskId: string | null;
   filterStatus: string;
+  total: number;
 }
 
-export const taskAdapter: EntityAdapter<Task> = createEntityAdapter<Task>();
+export const taskAdapter: EntityAdapter<Task> = createEntityAdapter<Task>({
+  selectId: model => model.id,
+});
 
 export const initialState: TaskState = taskAdapter.getInitialState({
   loading: false,
   error: null,
   selectedTaskId: null,
-  filterStatus: ''
+  filterStatus: '',
+  total: 0
 });

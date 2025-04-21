@@ -8,3 +8,8 @@ export interface Task {
   dueDate: string;
   status: TaskStatus;
 }
+
+export interface TaskLoad {
+  tasks: Task[];
+  total: number;
+}

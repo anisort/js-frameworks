@@ -1,28 +1,44 @@
-<mat-card class="task-item">
-  <mat-card-header>
-    <mat-card-title>{{ task.title }}</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    @if(task.description) {
-      <p><strong>Description:</strong> {{ task.description }}</p>
-    }
-    <p><strong>Assignee:</strong> {{ task.assignee }}</p>
-    <p><strong>Due date:</strong> {{ task.dueDate | date:'d.MM.yyyy'}}</p>
-    <p><strong>Статус: </strong><span [ngClass]="getStatusClasses()">{{ task.status |
-      taskStatus}}</span></p>
-    <mat-form-field>
-      <mat-label>Status</mat-label>
-      <mat-select [value]="task.status" (selectionChange)="updateStatus($event)">
-        <mat-option [value]="TaskStatus.TODO">To do</mat-option>
-        <mat-option [value]="TaskStatus.IN_PROGRESS">In progress</mat-option>
-        <mat-option [value]="TaskStatus.DONE">Done</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-fab class="task-item-button edit"
-            (click)="editTask()"><mat-icon>edit</mat-icon></button>
-    <button mat-fab class="task-item-button delete"
-            (click)="deleteTask(task.id)"><mat-icon>delete</mat-icon></button>
-  </mat-card-actions>
-</mat-card>
+@if (task$ | async; as task) {
+  <section class="item-wrapper">
+    <div class="item-card">
+      <div class="task-header">{{ task.title }}</div>
+      <div class="task-field">
+        <span class="label">Assignee:</span>
+        <span class="value">{{ task.assignee }}</span>
+      </div>
+      @if (task.description) {
+        <div class="task-field">
+          <span class="label">Description:</span>
+          <span class="value">{{ task.description }}</span>
+        </div>
+      }
+      <div class="task-field">
+        <span class="label">Due date:</span>
+        <span class="value">{{ task.dueDate }}</span>
+      </div>
+      <div class="task-field">
+        <span class="label">Status:</span>
+        <mat-chip [ngClass]="getStatusClass(task.status)">
+          {{ task.status | taskStatus}}
+        </mat-chip>
+      </div>
+      <div class="task-field">
+        <mat-form-field appearance="fill" class="status-select">
+          <mat-label>Статус</mat-label>
+          <mat-select [value]="task.status" (selectionChange)="updateStatus(task.id, $event)">
+            <mat-option [value]="TaskStatus.TODO">To do</mat-option>
+            <mat-option [value]="TaskStatus.IN_PROGRESS">In progress</mat-option>
+            <mat-option [value]="TaskStatus.DONE">Done</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="actions">
+      <button mat-stroked-button color="primary" [routerLink]="['/', { outlets: { primary: ['tasks'], aside: ['stats'] } }]"
+      >
+        <mat-icon>arrow_back</mat-icon>
+        Go back
+      </button>
+    </div>
+  </section>
+}

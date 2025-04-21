@@ -1,21 +1,37 @@
 const  TaskModel = require("../models/task.model");
 
 const getTasks = async (req, res) => {
-  try{
-    let query = {};
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
 
-    if (req.query.status) {
-      query.status = req.query.status;
-    }
+    const filter = (req.query.filter)?.trim().toLowerCase() || '';
+    const status = req.query.status;
 
-    let tasksQuery = TaskModel.find(query);
+    const searchQuery = filter
+      ? {
+        $or: [
+          { title: { $regex: filter, $options: 'i' } },
+          { description: { $regex: filter, $options: 'i' } },
+          { assignee: { $regex: filter, $options: 'i' } },
+        ],
+      }
+      : {};
 
-    const tasks = await tasksQuery;
-    res.json(tasks);
+    const statusQuery = status ? { status } : {};
+    const query = { ...searchQuery, ...statusQuery };
+
+    const [tasks, total] = await Promise.all([
+      TaskModel.find(query).skip(skip).limit(limit),
+      TaskModel.countDocuments(query),
+    ]);
+
+    res.json({ tasks, total });
   } catch (error) {
-
+    res.status(500).json({ message: 'Error retrieving tasks', errors: error });
   }
-}
+};
 
 const createTask = async (req, res) => {
   try {
@@ -85,11 +101,16 @@ const patchTask = async (req, res) => {
 const deleteTask = async (req, res) => {
   try {
     const deletedTask = await TaskModel.findByIdAndDelete(req.params.id);
-    if (!deletedTask) return res.status(404).json({ message: "Task not found" });
 
-    res.json({ message: "Task deleted" });
+    if (!deletedTask) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    const total = await TaskModel.countDocuments();
+
+    res.json({ message: 'Task deleted', total });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting task", error });
+    res.status(500).json({ message: 'Error deleting task', errors: error });
   }
 };
 

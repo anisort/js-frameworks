@@ -28,6 +28,15 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import {AppState} from './store/app.state';
 import {taskReducer} from './store/task/task.reducer';
 import {TaskEffects} from './store/task/task.effects';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatListModule} from '@angular/material/list';
+import {routerReducer, StoreRouterConnectingModule} from '@ngrx/router-store';
+import { TaskStatsComponent } from './components/task-stats/task-stats.component';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatChipsModule} from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -36,7 +45,9 @@ import {TaskEffects} from './store/task/task.effects';
     TaskItemComponent,
     StatusFilterPipe,
     TaskFormComponent,
-    TaskStatusPipe
+    TaskStatusPipe,
+    TaskStatsComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
@@ -54,9 +65,18 @@ import {TaskEffects} from './store/task/task.effects';
     MatIconModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    StoreModule.forRoot<AppState>({tasks: taskReducer}),
+    MatSidenavModule,
+    MatToolbarModule,
+    MatListModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatChipsModule,
+    StoreModule.forRoot<AppState>({tasks: taskReducer, router: routerReducer}),
     EffectsModule.forRoot([TaskEffects]),
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() })
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
+    StoreRouterConnectingModule.forRoot({
+      stateKey: 'router',
+    })
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

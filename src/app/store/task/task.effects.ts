@@ -14,12 +14,17 @@ export class TaskEffects {
   loadTasks$ = createEffect(() =>
     this.actions$.pipe(
       ofType(TaskActions.loadTasks),
-      switchMap(({ status }) =>
-        this.taskService.getTasks(status).pipe(
-          map((tasks: Task[]) => TaskActions.loadTasksSuccess({ tasks })),
-          catchError(err => {
-            return of(TaskActions.loadTasksFailure({ error: formatError(err) }));
-          })
+      switchMap(({ page, pageSize, filter, status }) =>
+        this.taskService.getTasks(page, pageSize, filter, status).pipe(
+          map(response =>
+            TaskActions.loadTasksSuccess({
+              tasks: response.tasks,
+              total: response.total,
+            })
+          ),
+          catchError((err: any) =>
+            of(TaskActions.loadTasksFailure({ error: formatError(err) }))
+          )
         )
       )
     )
@@ -72,9 +77,9 @@ export class TaskEffects {
       ofType(TaskActions.deleteTask),
       mergeMap(({ id }) =>
         this.taskService.deleteTask(id).pipe(
-          map(() => TaskActions.deleteTaskSuccess({ id })),
+          map((res) => TaskActions.deleteTaskSuccess({ id, total: res.total })),
           catchError(err => {
-            return of(TaskActions.deleteTaskFailure({ error: formatError(err) }));
+              return of(TaskActions.deleteTaskFailure({ error: formatError(err) }));
           })
         )
       )

@@ -13,8 +13,13 @@ export const taskReducer = createReducer(
     error: null,
   })),
 
-  on(TaskActions.loadTasksSuccess, (state: TaskState, { tasks }) =>
-    taskAdapter.setAll(tasks, { ...state, loading: false, error: null })
+  on(TaskActions.loadTasksSuccess, (state: TaskState, { tasks, total }) =>
+    taskAdapter.setAll(tasks, {
+      ...state,
+      total,
+      loading: false,
+      error: null
+    })
   ),
 
   on(TaskActions.loadTasksFailure, (state: TaskState, { error }) => ({
@@ -79,8 +84,8 @@ export const taskReducer = createReducer(
     error: null,
   })),
 
-  on(TaskActions.deleteTaskSuccess, (state: TaskState, { id }) =>
-    taskAdapter.removeOne(id, { ...state, loading: false, error: null })
+  on(TaskActions.deleteTaskSuccess, (state: TaskState, { id, total }) =>
+    taskAdapter.removeOne(id, { ...state, total, loading: false})
   ),
 
   on(TaskActions.deleteTaskFailure, (state: TaskState, { error }) => ({
