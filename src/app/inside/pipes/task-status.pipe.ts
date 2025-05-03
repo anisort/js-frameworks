@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import {TaskStatus} from '../../share/core/models/status.enum';
+import {TaskStatus} from '../../core/models/status.enum';
 
 @Pipe({
   name: 'taskStatus',
-  standalone: false
+  standalone: true
 })
 export class TaskStatusPipe implements PipeTransform {
 

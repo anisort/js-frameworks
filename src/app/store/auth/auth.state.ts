@@ -1,5 +1,5 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-import { AuthUser } from '../../share/core/models/auth.model';
+import { AuthUser } from '../../core/models/auth.model';
 
 export interface AuthState extends EntityState<AuthUser> {
   currentUserId: string | null;

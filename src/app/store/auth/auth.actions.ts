@@ -1,5 +1,5 @@
 import {createAction, props} from '@ngrx/store';
-import {AuthUser} from '../../share/core/models/auth.model';
+import {AuthUser} from '../../core/models/auth.model';
 
 // Register
 export const register = createAction(

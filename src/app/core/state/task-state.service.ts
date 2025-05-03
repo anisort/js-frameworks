@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, catchError, finalize, of, switchMap, tap, throwError} from 'rxjs';
-import {Task, TaskLoad} from '../../share/core/models/task.model';
-import {TaskService} from '../services/task.service';
+import {Task, TaskLoad} from '../models/task.model';
+import {TaskService} from '../../inside/services/task.service';
 
 @Injectable({
   providedIn: 'root'

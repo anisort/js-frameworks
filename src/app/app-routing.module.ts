@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { TaskListComponent } from './inside/components/task-layout/task-list/task-list.component';
 import { TaskStatsComponent } from './inside/components/task-layout/task-stats/task-stats.component';
 import { TaskItemComponent } from './inside/components/task-layout/task-item/task-item.component';
-import { PageNotFoundComponent } from './outside/components/page-not-found/page-not-found.component';
+import { PageNotFoundComponent } from './core/components/page-not-found/page-not-found.component';
 import {LoginComponent} from './outside/components/auth/login/login.component';
 import {WorkbenchLayoutComponent} from './inside/components/workbench-layout/workbench-layout.component';
 import {TaskLayoutComponent} from './inside/components/task-layout/task-layout.component';
@@ -13,7 +13,7 @@ import {
   RequestResetPasswordComponent
 } from './outside/components/auth/request-reset-password/request-reset-password.component';
 import {ResetPasswordComponent} from './outside/components/auth/reset-password/reset-password.component';
-import {AuthGuard} from './outside/guards/auth.guard';
+import {AuthGuard} from './core/guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/workbench/(tasks//list:stats)', pathMatch: 'full' },

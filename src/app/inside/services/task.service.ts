@@ -1,10 +1,10 @@
 import {Inject, Injectable} from '@angular/core';
-import {Task, TaskLoad} from '../../share/core/models/task.model';
+import {Task, TaskLoad} from '../../core/models/task.model';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {AppConfig, CONFIG_TOKEN} from '../../share/config/config';
+import {AppConfig, CONFIG_TOKEN} from '../../core/config/config';
 import {delay, map, Observable} from 'rxjs';
-import {TaskApi, TaskLoadApi} from '../../share/core/models/task-api.model';
-import {TaskAdapter} from '../adapters/task.adapter';
+import {TaskApi, TaskLoadApi} from '../../core/models/task-api.model';
+import {TaskAdapter} from '../../core/adapters/task.adapter';
 
 @Injectable({
   providedIn: 'root'

@@ -12,11 +12,13 @@
       <mat-option [value]="TaskStatus.DONE">Done</mat-option>
     </mat-select>
   </mat-form-field>
+
   <mat-form-field>
     <mat-label>Search (name, description, assignee)</mat-label>
     <input matInput type="text" id="filter" [formControl]="filterControl">
   </mat-form-field>
-  @if (hasLoading) {
+
+  @if (hasLoading()) {
     <div class="spinner-container">
       <mat-spinner></mat-spinner>
     </div>

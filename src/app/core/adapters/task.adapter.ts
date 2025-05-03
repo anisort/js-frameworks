@@ -1,6 +1,6 @@
-import {TaskApi, TaskLoadApi, TaskMutationApi} from '../../share/core/models/task-api.model';
-import {Task, TaskLoad} from '../../share/core/models/task.model';
-import {TaskStatus} from '../../share/core/models/status.enum';
+import {TaskApi, TaskLoadApi, TaskMutationApi} from '../models/task-api.model';
+import {Task, TaskLoad} from '../models/task.model';
+import {TaskStatus} from '../models/status.enum';
 import {UserAdapter} from './user.adapter';
 
 export class TaskAdapter {

@@ -1,19 +1,34 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ChangeDetectionStrategy, Component, DoCheck, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Observable, Subject, takeUntil} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../../../store/app.state';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import * as AuthSelectors from '../../../../store/auth/auth.selectors';
 import * as AuthActions from '../../../../store/auth/auth.actions';
+import {CommonModule} from '@angular/common';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 @Component({
   selector: 'app-register',
-  standalone: false,
+  standalone: true,
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit, OnDestroy, DoCheck {
   registerForm!: FormGroup;
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
@@ -46,5 +61,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+  ngDoCheck() {
+    console.log('[RegisterComponent] CD triggered');
   }
 }

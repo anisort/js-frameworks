@@ -1,23 +1,50 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {Task} from '../../../../share/core/models/task.model';
-import {TaskStatus} from '../../../../share/core/models/status.enum';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DoCheck,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output
+} from '@angular/core';
+import {Task} from '../../../../core/models/task.model';
+import {TaskStatus} from '../../../../core/models/status.enum';
 import {TaskService} from '../../../services/task.service';
-import {TaskStateService} from '../../../state/task-state.service';
-import {MatSelectChange} from '@angular/material/select';
+import {TaskStateService} from '../../../../core/state/task-state.service';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../../../store/app.state';
 import * as TaskActions from '../../../../store/task/task.actions';
 import {Observable, Subject, switchMap, takeUntil} from 'rxjs';
 import {selectRouteParams} from '../../../../store/router/router.selectors';
 import {selectTaskById} from '../../../../store/task/task.selector';
+import {CommonModule} from '@angular/common';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {TaskStatusPipe} from '../../../pipes/task-status.pipe';
+import {MatIconModule} from '@angular/material/icon';
+import {RouterModule} from '@angular/router';
+import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-task-item',
-  standalone: false,
+  standalone: true,
   templateUrl: './task-item.component.html',
-  styleUrl: './task-item.component.scss'
+  styleUrl: './task-item.component.scss',
+  imports: [
+    CommonModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    TaskStatusPipe,
+    MatIconModule,
+    RouterModule,
+    MatButtonModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaskItemComponent implements OnInit, OnDestroy{
+export class TaskItemComponent implements OnInit, OnDestroy, DoCheck{
   task$!: Observable<Task | null>;
   destroy$ = new Subject<void>();
 
@@ -42,6 +69,10 @@ export class TaskItemComponent implements OnInit, OnDestroy{
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  ngDoCheck() {
+    console.log('[TaskItemComponent] CD triggered');
   }
   protected readonly TaskStatus = TaskStatus;
 }

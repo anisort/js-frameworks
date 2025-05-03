@@ -1,6 +1,15 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import { Task } from '../../../../share/core/models/task.model';
-import {TaskStatus} from '../../../../share/core/models/status.enum';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DoCheck,
+  OnDestroy,
+  OnInit, signal,
+  ViewChild, WritableSignal
+} from '@angular/core';
+import { Task } from '../../../../core/models/task.model';
+import {TaskStatus} from '../../../../core/models/status.enum';
 import {TaskService} from '../../../services/task.service';
 import {
   combineLatest,
@@ -13,42 +22,57 @@ import {
   switchMap, take,
   takeUntil, tap,
 } from 'rxjs';
-import {TaskStateService} from '../../../state/task-state.service';
+import {TaskStateService} from '../../../../core/state/task-state.service';
 import {MatDialog} from '@angular/material/dialog';
 import {TaskFormComponent} from '../task-form/task-form.component';
-import {MatSelectChange} from '@angular/material/select';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {FormControl} from '@angular/forms';
+import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../../../store/app.state';
 import * as TaskActions from '../../../../store/task/task.actions';
 import * as TaskSelectors from '../../../../store/task/task.selector';
-import {MatTableDataSource} from '@angular/material/table';
-import {MatPaginator} from '@angular/material/paginator';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {Router} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {TaskStatusPipe} from '../../../pipes/task-status.pipe';
 
 
 @Component({
   selector: 'app-task-list',
-  standalone: false,
+  standalone: true,
   templateUrl: './task-list.component.html',
-  styleUrl: './task-list.component.scss'
+  styleUrl: './task-list.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    TaskStatusPipe,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy, DoCheck {
 
   displayedColumns: string[] = ['title', 'description', 'assignee', 'dueDate', 'status', 'actions'];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
+  @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
   destroy$ = new Subject<void>();
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
   totalTasks$!: Observable<number>;
-
   tasks$!: Observable<Task[]>;
-
-  hasLoading: boolean = false;
-
+  hasLoading: WritableSignal<boolean> = signal(false);
   filterControl = new FormControl('');
   statusControl = new FormControl('');
 
@@ -57,7 +81,9 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
     public dialog: MatDialog,
     private snackBar: MatSnackBar,
     private router: Router,
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadTasks(1, 5);
@@ -65,30 +91,26 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loading$ = this.store.select(TaskSelectors.selectTaskLoading);
     this.error$ = this.store.select(TaskSelectors.selectTaskError);
     this.totalTasks$ = this.store.select(TaskSelectors.selectTaskTotal);
-
     this.filterControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe(() => {
-      this.paginator.firstPage()
+      this.paginator.firstPage();
     });
-
     this.statusControl.valueChanges.subscribe(() => {
-      this.paginator.firstPage()
+      this.paginator.firstPage();
     });
-
     this.error$.pipe(takeUntil(this.destroy$)).subscribe(error => {
       if (error) {
         this.snackBar.open(error, 'Закрити', { duration: 4000, panelClass: ['error-snackbar'] });
       }
     });
-
-    this.loading$.pipe(takeUntil(this.destroy$)).subscribe(loading => {
-      this.hasLoading = loading;
-    });
+    this.loading$.pipe(takeUntil(this.destroy$)).subscribe((loading) => {
+      this.hasLoading.set(loading);
+    })
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.paginator.page.pipe(
       startWith({ pageIndex: 0, pageSize: 5 }),
       switchMap(({ pageIndex, pageSize }) =>
@@ -105,23 +127,20 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
     ).subscribe();
   }
 
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  ngDoCheck(): void {
+    console.log('[TaskListComponent] CD triggered');
   }
 
-  openDialog(): void {
+  openDialog() : void {
     const dialogRef = this.dialog.open(TaskFormComponent, {
       height: '70vh',
       width: '80vw',
     });
-
     dialogRef.afterClosed().pipe(
       filter(result => result === 'created'),
     ).subscribe(() => {
       this.goToLastPage();
-    })
+    });
   }
 
   viewTask(id: string): void {
@@ -129,45 +148,45 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   editTask(id: string): void {
-    this.store.dispatch(TaskActions.selectTask({ id }));
+    this.store.dispatch(TaskActions.selectTask({id}));
     this.openDialog();
   }
 
   deleteTask(id: string): void {
-    this.store.dispatch(TaskActions.deleteTask({ id }));
-    this.tasks$.pipe(take(1)).subscribe((tasks: Task[]) => {
-      const isLastItemOnPage: boolean = tasks.length === 1;
-      const currentPage: number = this.paginator.pageIndex + 1;
-
-      const goToPage: number = isLastItemOnPage && currentPage > 1
+    this.store.dispatch(TaskActions.deleteTask({id}));
+    this.tasks$.pipe(take(1)).subscribe(tasks => {
+      const isLastItemOnPage = tasks.length === 1;
+      const currentPage = this.paginator.pageIndex + 1;
+      const goToPage = isLastItemOnPage && currentPage > 1
         ? currentPage - 1
         : currentPage;
-
       this.loadTasks(
         goToPage,
         this.paginator.pageSize,
         this.filterControl.value ?? '',
         this.statusControl.value ?? ''
       );
-
       this.paginator.pageIndex = goToPage - 1;
+      this.cdr.markForCheck();
     });
   }
 
-
-  onSelected(event: MatSelectChange): void {
-    this.store.dispatch(TaskActions.setFilterStatus({status: event.value}))
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
+  protected readonly TaskStatus = TaskStatus;
+
   private loadTasks(page: number, pageSize: number, filter = '', status = ''): void {
-    this.store.dispatch(TaskActions.loadTasks({page, pageSize, filter, status}));
+    this.store.dispatch(TaskActions.loadTasks({ page, pageSize, filter, status }));
   }
 
   private goToLastPage(): void {
-    this.totalTasks$.pipe(take(1)).subscribe((total: number) => {
-      const lastPage: number = Math.ceil((total + 1) / this.paginator.pageSize);
+    this.totalTasks$.pipe(take(1)).subscribe(total => {
+      const lastPage = Math.ceil((total + 1) / this.paginator.pageSize);
       this.paginator.pageIndex = lastPage - 1;
-
+      this.cdr.markForCheck();
       this.loadTasks(
         lastPage,
         this.paginator.pageSize,
@@ -176,8 +195,10 @@ export class TaskListComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     });
   }
-
-  protected readonly TaskStatus = TaskStatus;
+  onSelected(event: MatSelectChange): void {
+    this.store.dispatch(TaskActions.setFilterStatus({status: event.value}))
+  }
 }
+
 
 

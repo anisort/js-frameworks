@@ -1,11 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import { AuthService } from '../../outside/services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import {catchError, exhaustMap, map, of, tap} from 'rxjs';
 import *  as AuthActions from './auth.actions';
-import {formatError} from '../../share/utils/error.util';
+import {formatError} from '../../core/utils/error.util';
 
 @Injectable()
 export class AuthEffects {

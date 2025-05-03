@@ -1,8 +1,8 @@
 import {Inject, Injectable} from '@angular/core';
-import {AppConfig, CONFIG_TOKEN} from '../../share/config/config';
+import {AppConfig, CONFIG_TOKEN} from '../config/config';
 import {HttpClient} from '@angular/common/http';
 import {Observable, tap} from 'rxjs';
-import {LoginResponse} from '../../share/core/models/auth.model';
+import {LoginResponse} from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'

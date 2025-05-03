@@ -45,7 +45,7 @@ taskForm.get('status')?.dirty">
 <div class="form-actions">
   <button mat-raised-button color="primary" type="submit"
           [disabled]="!taskForm.valid" (click)="onSubmit()">
-    {{ editMode ? 'Update task' : 'Add a new task'}}
+    {{ editMode() ? 'Update task' : 'Add a new task'}}
   </button>
   <button mat-button mat-dialog-close>Cancel</button>
 </div>

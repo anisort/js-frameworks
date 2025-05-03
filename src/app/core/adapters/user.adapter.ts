@@ -1,4 +1,4 @@
-import { User, UserAPI } from '../../share/core/models/user.model';
+import { User, UserAPI } from '../models/user.model';
 
 export class UserAdapter {
   static fromUserAPI(response: UserAPI): User {
