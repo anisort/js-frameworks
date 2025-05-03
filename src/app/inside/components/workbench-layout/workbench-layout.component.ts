@@ -3,7 +3,6 @@ import {MatSidenav} from '@angular/material/sidenav';
 import {filter, map, Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {AppState} from '../../../store/app.state';
-import {selectUrl} from '../../../store/router/router.selectors';
 import {AuthService} from '../../../outside/services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
 
