@@ -1,5 +1,5 @@
-import { TaskStatus } from '../../core/models/status.enum';
-import { Task } from '../../core/models/task.model';
+import { TaskStatus } from '../../share/core/models/status.enum';
+import { Task } from '../../share/core/models/task.model';
 import { createAction, props } from '@ngrx/store';
 
 // Load

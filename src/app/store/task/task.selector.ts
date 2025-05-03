@@ -1,6 +1,6 @@
 import {createAction, createFeatureSelector, createSelector} from '@ngrx/store';
 import {taskAdapter, TaskState} from './task.state';
-import {TaskStatus} from '../../core/models/status.enum';
+import {TaskStatus} from '../../share/core/models/status.enum';
 
 export const selectTaskState = createFeatureSelector<TaskState>('tasks');
 

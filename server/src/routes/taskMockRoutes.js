@@ -5,8 +5,9 @@ const taskMockController = require('../controllers/taskMockController');
 const {
   validateTask,
   validateTaskPatch,
-  handleValidationErrors
 } = require('../validators/taskValidator')
+
+const {handleValidationErrors} = require("../middleware/validationErrorHandler.middleware")
 
 router.get('/', taskMockController.getTasks);
 router.post('/', validateTask, handleValidationErrors, taskMockController.createTask);

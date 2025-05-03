@@ -1,14 +1,14 @@
 <mat-sidenav-container class="app-container">
-  <mat-sidenav mode="side" opened class="app-sidenav">
-    <mat-list>
-      <mat-list-item>
-        <mat-icon matListItemIcon>list</mat-icon>
-        <a matListItemTitle [routerLink]="[{ outlets: { primary: ['tasks'], aside: ['stats'] } }]" routerLinkActive="active">
-          <span>List of tasks</span>
-        </a>
-      </mat-list-item>
-    </mat-list>
-  </mat-sidenav>
+<!--  <mat-sidenav mode="side" opened class="app-sidenav">-->
+<!--    <mat-list>-->
+<!--      <mat-list-item>-->
+<!--        <mat-icon matListItemIcon>list</mat-icon>-->
+<!--        <a matListItemTitle [routerLink]="[{ outlets: { primary: ['tasks'], aside: ['stats'] } }]" routerLinkActive="active">-->
+<!--          <span>List of tasks</span>-->
+<!--        </a>-->
+<!--      </mat-list-item>-->
+<!--    </mat-list>-->
+<!--  </mat-sidenav>-->
   <mat-sidenav-content class="app-sidenav-content">
     <div class="app-content">
       @if (isTasksRoute$ | async) {

@@ -5,7 +5,6 @@ const ALLOWED_FIELDS = ['title', 'description', 'assignee', 'dueDate', 'status']
 // 🔹 Валідація `POST` та `PUT`
 const validateTask = [
   check('title').notEmpty().withMessage('Поле title є обов’язковим'),
-  check('assignee').notEmpty().withMessage('Поле assignee є обов’язковим'),
   check('dueDate').notEmpty().withMessage('Поле dueDate є обов’язковим').isISO8601().toDate(),
   check('status').isIn(Object.values(TaskStatus)).withMessage(`Статус має бути одним із:
 ${Object.values(TaskStatus).join(', ')}`),
@@ -33,14 +32,6 @@ const validateTaskPatch = [
   }
 ];
 
-// 🔹 Функція для перевірки помилок `express-validator`
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const valErrors = Object.values(errors.errors).map((err) => err.msg);
-    return res.status(400).json({ message: "Validation error", errors: valErrors });
-  }
-  next();
-};
 
-module.exports = { validateTask, validateTaskPatch, handleValidationErrors };
+
+module.exports = { validateTask, validateTaskPatch };

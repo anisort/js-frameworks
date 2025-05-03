@@ -1,0 +1,22 @@
+:host {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+}
+.login-container {
+  display: flex;
+  justify-content: center;
+  width: 40%;
+}
+.login-card {
+  flex-grow: 1;
+  gap: 40px;
+  padding: 24px;
+}
+mat-form-field {
+  display: block;
+  width: 100%;
+  margin-bottom: 16px;
+}

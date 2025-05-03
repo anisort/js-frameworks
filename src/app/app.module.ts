@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TaskListComponent } from './components/task-list/task-list.component';
-import { TaskItemComponent } from './components/task-item/task-item.component';
-import { StatusFilterPipe } from './share/pipes/status-filter.pipe';
-import { TaskFormComponent } from './components/task-form/task-form.component';
+import { TaskListComponent } from './inside/components/task-layout/task-list/task-list.component';
+import { TaskItemComponent } from './inside/components/task-layout/task-item/task-item.component';
+import { StatusFilterPipe } from './inside/pipes/status-filter.pipe';
+import { TaskFormComponent } from './inside/components/task-layout/task-form/task-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import {provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { TaskStatusPipe } from './share/pipes/task-status.pipe';
+import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import { TaskStatusPipe } from './inside/pipes/task-status.pipe';
 import {MatDialogModule} from '@angular/material/dialog';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -32,11 +32,21 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatListModule} from '@angular/material/list';
 import {routerReducer, StoreRouterConnectingModule} from '@ngrx/router-store';
-import { TaskStatsComponent } from './components/task-stats/task-stats.component';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { TaskStatsComponent } from './inside/components/task-layout/task-stats/task-stats.component';
+import { PageNotFoundComponent } from './outside/components/page-not-found/page-not-found.component';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatChipsModule} from '@angular/material/chips';
+import {authReducer} from './store/auth/auth.reducer';
+import {AuthEffects} from './store/auth/auth.effects';
+import { LoginComponent } from './outside/components/auth/login/login.component';
+import { WorkbenchLayoutComponent } from './inside/components/workbench-layout/workbench-layout.component';
+import { TaskLayoutComponent } from './inside/components/task-layout/task-layout.component';
+import { RegisterComponent } from './outside/components/auth/register/register.component';
+import { ConfirmEmailComponent } from './outside/components/auth/confirm-email/confirm-email.component';
+import { RequestResetPasswordComponent } from './outside/components/auth/request-reset-password/request-reset-password.component';
+import { ResetPasswordComponent } from './outside/components/auth/reset-password/reset-password.component';
+import {AuthInterceptor} from './outside/interceptors/auth.interceptors';
 
 @NgModule({
   declarations: [
@@ -47,7 +57,14 @@ import {MatChipsModule} from '@angular/material/chips';
     TaskFormComponent,
     TaskStatusPipe,
     TaskStatsComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    LoginComponent,
+    WorkbenchLayoutComponent,
+    TaskLayoutComponent,
+    RegisterComponent,
+    ConfirmEmailComponent,
+    RequestResetPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -71,8 +88,12 @@ import {MatChipsModule} from '@angular/material/chips';
     MatTableModule,
     MatPaginatorModule,
     MatChipsModule,
-    StoreModule.forRoot<AppState>({tasks: taskReducer, router: routerReducer}),
-    EffectsModule.forRoot([TaskEffects]),
+    StoreModule.forRoot<AppState>({
+      tasks: taskReducer,
+      auth: authReducer,
+      router: routerReducer
+    }),
+    EffectsModule.forRoot([TaskEffects, AuthEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
     StoreRouterConnectingModule.forRoot({
       stateKey: 'router',
@@ -80,6 +101,7 @@ import {MatChipsModule} from '@angular/material/chips';
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

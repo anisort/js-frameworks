@@ -6,8 +6,13 @@ const taskController = require('../controllers/task.controller');
 const {
   validateTask,
   validateTaskPatch,
-  handleValidationErrors
 } = require('../validators/taskValidator');
+
+const authMiddleware = require('../middleware/auth.middleware');
+
+const {handleValidationErrors} = require("../middleware/validationErrorHandler.middleware")
+
+router.use(authMiddleware);
 
 router.get('/', taskController.getTasks);
 router.post('/', validateTask, handleValidationErrors, taskController.createTask);

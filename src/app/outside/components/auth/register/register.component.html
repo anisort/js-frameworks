@@ -1,0 +1,39 @@
+<div class="register-container">
+  <mat-card class="register-card">
+    <mat-card-title>Sign up</mat-card-title>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" />
+        @if(registerForm.get('email')?.hasError('required')){
+          <mat-error>
+            Email is required
+          </mat-error>
+        }
+        @if(registerForm.get('email')?.hasError('email') && registerForm.get('email')?.dirty){
+          <mat-error>
+            Wrong email
+          </mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password" />
+        @if(registerForm.get('password')?.hasError('required') && registerForm.get('password')?.dirty){
+          <mat-error>
+            Password is required
+          </mat-error>
+        }
+        @if(registerForm.get('password')?.hasError('minlength')){
+          <mat-error>
+            Password must contain at least {{registerForm.get('password')?.getError('minlength').requiredLength}}
+            characters
+          </mat-error>
+        }
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid || (loading$ | async)">
+        Sign up
+      </button>
+    </form>
+  </mat-card>
+</div>

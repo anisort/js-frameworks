@@ -1,0 +1,14 @@
+<div class="confirm-container">
+  <mat-card class="confirm-card">
+    <mat-card-title>Confirmation email</mat-card-title>
+    @if (error$ | async; as error) {
+      <mat-card-content>
+        <p class="error-text">{{ error }}</p>
+      </mat-card-content>
+    } @else {
+      <mat-card-content>
+        <p>{{ message }}</p>
+      </mat-card-content>
+    }
+  </mat-card>
+</div>

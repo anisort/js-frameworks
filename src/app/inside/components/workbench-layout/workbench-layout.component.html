@@ -1,0 +1,34 @@
+<mat-sidenav-container class="workbench-container">
+<mat-sidenav mode="side" opened class="workbench-sidenav">
+  <div class="sidenav-content">
+    <mat-list>
+      <mat-list-item>
+        <mat-icon matListItemIcon>list</mat-icon>
+        <a matListItemTitle [routerLink]="[{ outlets: { primary: ['tasks', 'list'], aside: ['stats'] } }]"
+           routerLinkActive="active">
+          <span>Список завдань</span>
+        </a>
+      </mat-list-item>
+    </mat-list>
+    <div class="sidenav-action">
+      <button mat-button (click)="logout()">Log out</button>
+    </div>
+  </div>
+</mat-sidenav>
+<mat-sidenav-content class="workbench-sidenav-content">
+  <div class="workbench-content">
+    @if (isNamedOutlet$ | async) {
+      <aside class="app-aside">
+        <router-outlet name="aside"></router-outlet>
+      </aside>
+      <main class="workbench-main">
+        <router-outlet></router-outlet>
+      </main>
+    } @else {
+      <main class="workbench-main">
+        <router-outlet></router-outlet>
+      </main>
+    }
+  </div>
+</mat-sidenav-content>
+</mat-sidenav-container>

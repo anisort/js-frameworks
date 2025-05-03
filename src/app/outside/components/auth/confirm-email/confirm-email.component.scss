@@ -1,0 +1,27 @@
+:host {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.confirm-card {
+  width: 60%;
+  max-width: 500px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+}
+
+.error-text {
+  color: red;
+}
