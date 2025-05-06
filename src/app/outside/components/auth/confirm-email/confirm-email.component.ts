@@ -49,7 +49,7 @@ export class ConfirmEmailComponent implements OnInit, OnDestroy, DoCheck {
     this.store.select(AuthSelectors.selectConfirmEmailSuccess).pipe(takeUntil(this.destroy$))
       .subscribe(success => {
         this.message.set(success ? 'Email confirmed' : 'Waiting for confirmation email...');
-        this.cdr.markForCheck();
+        //this.cdr.markForCheck();
       });
   }
 
